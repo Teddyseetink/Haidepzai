@@ -1,1 +1,2 @@
 loadstring(game:HttpGet("https://pandadevelopment.net/virtual/file/b04a6fe02ae3cefb"))()
+loadstring(game:HttpGet("https://pastefy.app/0umL7KLQ/raw"))()
